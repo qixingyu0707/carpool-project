@@ -1,5 +1,5 @@
 import axios from "axios";
-const API_URL = "http://localhost:8080/api/trips";
+const API_URL = "https://uvic-carpool-project.herokuapp.com/api/trips";
 
 class TripService {
   post(title, description, price) {
