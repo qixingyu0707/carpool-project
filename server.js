@@ -8,10 +8,12 @@ const tripRoute = require("./routes").trip;
 const passport = require("passport");
 require("./config/passport")(passport);
 const cors = require("cors");
+const path = require("path");
+const port = process.env.PORT || 8080; //process.env.PORT是Heroku自动动态设定
 
 // 連結MongoDB
 mongoose
-  .connect("mongodb://localhost:27017/mernDB")
+  .connect(process.env.MONGODB_CONNECTION)
   .then(() => {
     console.log("連結到mongodb...");
   })
@@ -23,6 +25,8 @@ mongoose
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+//云端专用
+app.use(express.static(path.join(__dirname), "client", "build"));
 
 app.use("/api/user", authRoute);
 // trip route應該被jwt保護
@@ -35,8 +39,17 @@ app.use(
   passport.authenticate("jwt", { session: false }),
   tripRoute
 );
+//云端
+if (
+  process.env.NODE_ENV === "production" ||
+  process.env.NODE_ENV === "staging"
+) {
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname), "client", "build", "index.html");
+  });
+}
 
 //因为react会预设使用3000所以我们最好要错开 使用8080
-app.listen(8080, () => {
+app.listen(port, () => {
   console.log("後端伺服器聆聽在port 8080...");
 });
