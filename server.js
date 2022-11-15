@@ -26,7 +26,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
 //云端专用
-app.use(express.static(path.join(__dirname), "client", "build"));
+app.use(express.static(path.join(__dirname, "client", "build")));
 
 app.use("/api/user", authRoute);
 // trip route應該被jwt保護
